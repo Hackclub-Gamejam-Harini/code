@@ -21,7 +21,7 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     cursor: grab;
-    touch-action: none; /* important for pointer dragging on touch devices */
+    touch-action: none; 
 }
 
 #water {
@@ -30,4 +30,5 @@ body {
     left: 50%;
     transform-origin: bottom right;
     z-index: 1;
+    border: none;
 }
