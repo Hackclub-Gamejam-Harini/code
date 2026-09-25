@@ -1,6 +1,15 @@
 let drink;
 let cupContents = [];
 let hasPoured = false;
+let score = 0;
+
+const recipes = [
+    { name: 'Black Coffee', need: ['water'] },
+    { name: 'Milk Tea', need: ['water', 'milk'] },
+    { name: 'Berry Milk', need: ['water', 'milk', 'raspberry'] },
+];
+
+// dragging/dropping
 
 let draggedRasp = null;
 
@@ -32,6 +41,7 @@ function attachToCup(item) {
 
 }
 
+//water
 const kettle = document.getElementById("water");
 let kettleDragging = false;
 let offsetX, offsetY;
@@ -75,6 +85,8 @@ document.addEventListener("keydown", (e) => {
     }
 });
 
+
+//move cup
 const cup = document.getElementById("cup");
 let cupDragging = false;
 
@@ -95,6 +107,7 @@ cup.addEventListener("pointermove", (e) => {
 
 cup.addEventListener("pointerup", () => cupDragging = false);
 
+// add raspberries
 const raspBowl = document.getElementById("raspberryBowl");
 const rasp = document.getElementById("raspberry");
 let raspDraggable = false;
@@ -129,11 +142,12 @@ raspBowl.addEventListener("pointerdown", (e) => {
         if (isOverlapping(newRasp, cup)) {
             attachToCup(newRasp);
             attached = true;
-            cupContents.push(newRasp);
+            cupContents.push('raspberry');
         }
     });
 });
 
+// adding milk
 const milk = document.getElementById("milk");
 let milkDragging = false;
 
@@ -177,3 +191,79 @@ milk.addEventListener("pointermove", (e) => {
 });
 
 milk.addEventListener("pointerup", () => milkDragging = false)
+
+// orders
+
+let currentOrder = null;
+let orderTimer = null;
+let timeLeft = 0;
+
+function newCustomer() {
+    currentOrder = recipes[Math.floor(Math.random() * recipes.length)];
+    cupContents = [];
+    timeLeft = 20;
+
+    cup.innerHTML = '';
+
+    hasPoured = false;
+    angle = 0;
+    milkAngle = 0;
+    kettle.style.transform = `rotate(0deg)`;
+    milk.style.transform = `rotate(0deg)`;
+
+    document.getElementById('orderText').textContent =
+        `Order: ${currentOrder.name} (${currentOrder.need.join(', ')})`;
+
+    clearInterval(orderTimer);
+    orderTimer = setInterval(() => {
+        timeLeft -= 1;
+        document.getElementById('timerText').textContent = `Time: ${timeLeft}s`;
+        if (timeLeft <= 0) {
+            clearInterval(orderTimer);
+            failOrder();
+        }
+    }, 1000);
+}
+
+
+function serveDrink() {
+    const made = [...cupContents].sort();
+    const needed = [...currentOrder.need].sort();
+    const isMatch = made.length === needed.length &&
+        made.every((item, i) => item === needed[i]);
+
+    clearInterval(orderTimer);
+
+    if (isMatch) {
+        console.log('Correct! Serving...');
+        // add score/coins here
+    } else {
+        console.log('Wrong order, made:', made, 'needed:', needed);
+    }
+
+    setTimeout(newCustomer, 1000);
+}
+
+document.getElementById('serveBtn').addEventListener('click', serveDrink);
+
+function serveDrink() {
+    const made = [...cupContents].sort();
+    const needed = [...currentOrder.need].sort();
+    const isMatch = made.length === needed.length &&
+        made.every((item, i) => item === needed[i]);
+
+    clearInterval(orderTimer);
+
+    if (isMatch) {
+        console.log('Correct! Serving...');
+        score = score + (needed.length * 50);
+    } else {
+        console.log('Wrong order, made:', made, 'needed:', needed);
+    }
+
+    setTimeout(newCustomer, 1000);
+}
+
+document.getElementById('serveBtn').addEventListener('click', serveDrink);
+
+newCustomer();
