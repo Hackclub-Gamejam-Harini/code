@@ -2,12 +2,25 @@ let drink;
 let cupContents = [];
 let hasPoured = false;
 let score = 0;
+let loss = 0;
 
 const recipes = [
     { name: 'Black Coffee', need: ['water'] },
     { name: 'Milk Tea', need: ['water', 'milk'] },
     { name: 'Berry Milk', need: ['water', 'milk', 'raspberry'] },
 ];
+
+const customers = [
+    { animal: 'Frog', link: 'Assets/frog.png'},
+    { animal: 'Satyr', link: 'Assets/satyr.png'}
+]
+
+function chooseCustomer() {
+    const c = customers[Math.floor(Math.random() * customers.length)];
+    document.getElementById("customer").src = c.link;
+}
+
+chooseCustomer();
 
 // dragging/dropping
 
@@ -41,10 +54,13 @@ function attachToCup(item) {
 
 }
 
+
+
 //water
 const kettle = document.getElementById("water");
 let kettleDragging = false;
 let offsetX, offsetY;
+const kettleHome = { left: kettle.style.left || getComputedStyle(kettle).left, top: kettle.style.top || getComputedStyle(kettle).top };
 
 kettle.addEventListener("pointerdown", (e) => {
     kettleDragging = true;
@@ -70,7 +86,7 @@ function startPour() {
     hasPoured = true;
     cupContents.push('water');
     console.log('Cup now has:', cupContents);
-    // TODO: Animation
+    cup.style.backgroundPosition = `-66px 0px`
 }
 
 document.addEventListener("keydown", (e) => {
@@ -147,9 +163,50 @@ raspBowl.addEventListener("pointerdown", (e) => {
     });
 });
 
+// lemon
+const lemonBowl = document.getElementById("lemonBowl");
+const lemon = document.getElementById("lemon");
+let lemonDraggable = false;
+
+lemonBowl.addEventListener("pointerdown", (e) => {
+    const newLemon = lemon.cloneNode(true);
+    newLemon.style.visibility = 'visible';
+    document.getElementById("workspace").appendChild(newLemon);
+
+    let lemonAttached = false;
+
+    newLemon.addEventListener("pointerdown", (e) => {
+        if (lemonAttached) return;
+        draggedLemon = newLemon;
+        const rect = newLemon.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        newLemon.setPointerCapture(e.pointerId);
+    });
+
+    newLemon.addEventListener("pointermove", (e) => {
+        if (lemonAttached || draggedLemon !== newLemon) return;
+        const workspace = document.getElementById("workspace").getBoundingClientRect();
+        newLemon.style.left = `${e.clientX - workspace.left - offsetX}px`;
+        newLemon.style.top = `${e.clientY - workspace.top - offsetY}px`;
+    });
+
+    newLemon.addEventListener("pointerup", () => {
+        if (lemonAttached) return;
+        draggedLemon = null;
+
+        if (isOverlapping(newLemon, cup)) {
+            attachToCup(newLemon);
+            lemonAttached = true;
+            cupContents.push('lemon');
+        }
+    });
+});
+
 // adding milk
 const milk = document.getElementById("milk");
 let milkDragging = false;
+const milkHome = { left: milk.style.left || getComputedStyle(milk).left, top: milk.style.top || getComputedStyle(milk).top };
 
 milk.addEventListener("pointerdown", (e) => {
     milkDragging = true;
@@ -164,10 +221,13 @@ let milkAngle = 0;
 function startPourMilk() {
     if (hasPoured) return;
     hasPoured = true;
-    cupContents.push('milk');
-    console.log('Cup now has:', cupContents);
-    // TODO: Animation
-    //Animation
+    if (cup.style.backgroundPosition === `-66px 0px`) {
+        cup.style.backgroundPosition = `-132px 0px`
+        cupContents.push('milk');
+        console.log('Cup now has:', cupContents);
+    } else {
+        document.getElementById("message").innerText = `Something else needs to be in the cup`;
+    }
 }
 
 document.addEventListener("keydown", (e) => {
@@ -192,8 +252,54 @@ milk.addEventListener("pointermove", (e) => {
 
 milk.addEventListener("pointerup", () => milkDragging = false)
 
-// orders
+const cream = document.getElementById("cream");
+let creamDragging = false;
+const creamHome = { left: cream.style.left || getComputedStyle(cream).left, top: cream.style.top || getComputedStyle(cream).top };
 
+cream.addEventListener("pointerdown", (e) => {
+    creamDragging = true;
+    const rect = cream.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    cream.setPointerCapture(e.pointerId);
+});
+
+let creamAngle = 0;
+
+function startPourCream() {
+    if (hasPoured) return;
+    hasPoured = true;
+    if (cup.style.backgroundPosition === `-66px 0px`) {
+        cup.style.backgroundPosition = `-0px -65px`
+        cupContents.push('cream');
+        console.log('Cup now has:', cupContents);
+    } else {
+        document.getElementById("message").innerText = `Something else needs to be in the cup`;
+    }
+}
+
+document.addEventListener("keydown", (e) => {
+    if (creamDragging) {
+        if (e.key === "ArrowRight") creamAngle += 10;
+        if (e.key === "ArrowLeft") creamAngle -= 10;
+        cream.style.transform = `rotate(${creamAngle}deg)`;
+
+        if (Math.abs(creamAngle) > 30 && isOverlapping(cream, cup)) {
+            startPourCream();
+            hasPoured = false;
+        }
+    }
+});
+cream.addEventListener("pointermove", (e) => {
+    if (!creamDragging) return;
+    const workspace = document.getElementById("workspace").getBoundingClientRect();
+    cream.style.left = `${e.clientX - workspace.left - offsetX}px`;
+    cream.style.top = `${e.clientY - workspace.top - offsetY}px`;
+});
+
+cream.addEventListener("pointerup", () => creamDragging = false)
+
+// orders
 let currentOrder = null;
 let orderTimer = null;
 let timeLeft = 0;
@@ -210,21 +316,32 @@ function newCustomer() {
     milkAngle = 0;
     kettle.style.transform = `rotate(0deg)`;
     milk.style.transform = `rotate(0deg)`;
+    cream.style.transform = `rotate(0deg)`;
 
-    document.getElementById('orderText').textContent =
+    document.getElementById("orderText").textContent =
         `Order: ${currentOrder.name} (${currentOrder.need.join(', ')})`;
 
     clearInterval(orderTimer);
     orderTimer = setInterval(() => {
         timeLeft -= 1;
-        document.getElementById('timerText').textContent = `Time: ${timeLeft}s`;
+        document.getElementById("timerText").textContent = `Time: ${timeLeft}s`;
         if (timeLeft <= 0) {
             clearInterval(orderTimer);
-            failOrder();
+            document.getElementById("message").innerText = 'Times up';
+            loss ++;
+            newCustomer();
         }
     }, 1000);
-}
 
+    // resetting everything
+    kettle.style.left = kettleHome.left;
+    kettle.style.top = kettleHome.top;
+    milk.style.left = milkHome.left;
+    milk.style.top = milkHome.top;
+    cream.style.left = creamHome.left;
+    cream.style.top = creamHome.top;
+    cup.style.backgroundPosition = `0px 0px`;
+}
 
 function serveDrink() {
     const made = [...cupContents].sort();
@@ -235,35 +352,29 @@ function serveDrink() {
     clearInterval(orderTimer);
 
     if (isMatch) {
-        console.log('Correct! Serving...');
-        // add score/coins here
-    } else {
-        console.log('Wrong order, made:', made, 'needed:', needed);
-    }
-
-    setTimeout(newCustomer, 1000);
-}
-
-document.getElementById('serveBtn').addEventListener('click', serveDrink);
-
-function serveDrink() {
-    const made = [...cupContents].sort();
-    const needed = [...currentOrder.need].sort();
-    const isMatch = made.length === needed.length &&
-        made.every((item, i) => item === needed[i]);
-
-    clearInterval(orderTimer);
-
-    if (isMatch) {
-        console.log('Correct! Serving...');
+        document.getElementById("message").innerText = `Correct! Serving...`;
         score = score + (needed.length * 50);
+        document.getElementById("score").innerText = `score: ` + score;
     } else {
-        console.log('Wrong order, made:', made, 'needed:', needed);
+        document.getElementById("message").innerText = 'Wrong order, made:' + made + 'needed:' + needed;
+        loss ++;
     }
 
     setTimeout(newCustomer, 1000);
 }
 
-document.getElementById('serveBtn').addEventListener('click', serveDrink);
+document.getElementById("serveBtn").addEventListener('click', serveDrink);
 
 newCustomer();
+
+// audio
+const bgMusic = document.getElementById('bgMusic');
+const muteBtn = document.getElementById('musicBtn');
+
+muteBtn.addEventListener('click', () => {
+    if (bgMusic.paused) {
+        bgMusic.play();
+    } else {
+        bgMusic.pause();
+    }
+});

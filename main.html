@@ -16,12 +16,32 @@
             <button class="objectBtn" id="raspberryBowl"></button>
             <img class="consumable" id="raspberry" src="Assets/raspberries.png">
             <button class="objectBtn" id="milk"></button>
+            <button class="objectBtn" id="lemonBowl"></button>
+            <img class="consumable" id="lemon" src="Assets/lemonslice.png">
+            <button class="objectBtn" id="cream"></button>
 
-            <button id="serveBtn"></button>
-            <div id="orderText"></div>
-            <div id="timerText"></div>
+            <div id="customerWrap">
+                <img id="customer" src="Assets/frog.png">
+            </div>
+
+            <img id="counter" src="Assets/counter.png">
+
+            <div id="order">
+                <h4 id="orderHeading">Order</h4>
+                <div id="orderText"></div>
+                <div id="timerText"></div>
+                <button id="serveBtn"></button>
+
+                <p id="score">score: 0</p>
+                <p id="message"></p>
+            </div>
         </div>
     </div>
+
+    <audio id="bgMusic" src="Assets/mainSong.mp3" loop></audio>
+    <button id="musicBtn">Music</button>
+
+
 
     <script src="main.js"></script>
 

@@ -1,6 +1,6 @@
 body {
     margin: 0;
-    background-image: url(Assets/counterBg.jpg);
+    background-image: url(Assets/bg.jpg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -32,20 +32,24 @@ body {
 
 #water {
     background-image: url("Assets/kettle.png");
-    top: 45%;
+    top: 50%;
     left: 60%;
     transform-origin: bottom right;
-    z-index: 1;
+    z-index: 3;
     border: none;
 }
 
 #cup{
-    background-image: url(Assets/cup.png);
-    top: 45%;
+    background-image: url(Assets/drinks.png);
+    top: 55%;
     left: 5%;
+    background-size: 182px 256px;
+    background-position: 0 0;
     transform-origin: bottom right;
-    z-index: 1;
+    z-index: 3;
     border: none;
+    width: 64px;
+    height: 64px;
 }
 
 #raspberry{
@@ -54,7 +58,7 @@ body {
     position: absolute;
     top: 45%;
     left: 22%;
-    z-index: 2;
+    z-index: 4;
     visibility: hidden;
     cursor: grab;
     touch-action: none; 
@@ -66,16 +70,90 @@ body {
     top: 45%;
     left: 15%;
     transform-origin: bottom right;
-    z-index: 1;
+    z-index: 3;
     border: none;
 }
 
 #milk {
     background-image: url("Assets/milk.png");
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform-origin: bottom right;
-    z-index: 1;
+    z-index: 3;
     border: none;
 }
 
+#musicBtn {
+    position: absolute;
+    top: 5%;
+    right: 5%;
+}
+
+#lemon {
+    width: 3%;
+    height: 5%;
+    position: absolute;
+    top: 45%;
+    left: 33%;
+    z-index: 4;
+    cursor: grab;
+    visibility: hidden;
+    touch-action: none; 
+    outline: none;
+}
+
+#lemonBowl {
+    background-image: url(Assets/lemonBowl.png);
+    top: 45%;
+    left: 35%;
+    transform-origin: bottom right;
+    z-index: 3;
+    border: none;
+}
+
+#cream {
+    background-image: url("Assets/creamJug.png");
+    top: 50%;
+    left: 40%;
+    transform-origin: bottom right;
+    z-index: 3;
+    border: none;
+}
+
+#order {
+    position: absolute;
+    top: 0px;
+    background-color: antiquewhite;
+    padding-left: 15px;
+    margin-top: 5px;
+    margin-top: 0px;
+    padding-bottom: 5px;
+    padding-right: 5px
+}
+
+#orderHeading {
+    padding: 5px;
+}
+
+#customerWrap {
+    position: absolute;
+    top: 10%;
+    left: 30%;
+    width: 182px;      
+    height: 394px;
+    overflow: hidden;  
+    z-index: 1;
+}
+
+#customer {
+    width: 430px;       
+    height: 394px;
+    display: block;
+}
+#counter {
+    width: 100%;
+    height: 95%;
+    z-index: 2;
+    position: absolute;
+    bottom: 0px;
+}
