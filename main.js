@@ -1,6 +1,8 @@
 let drink;
 let cupContents = [];
-let hasPoured = false;
+let hasPouredTea = false;
+let hasPouredCoffee = false;
+let hasPouredMilk = false;
 let score = 0;
 let loss = 0;
 
@@ -84,8 +86,8 @@ kettle.addEventListener("pointerup", () => kettleDragging = false);
 let angle = 0;
 
 function startPour() {
-    if (hasPoured) return;
-    hasPoured = true;
+    if (hasPouredTea) return;
+    hasPouredTea = true;
     cupContents.push('tea');
     console.log('Cup now has:', cupContents);
     cup.style.backgroundPosition = `-132px 0px`
@@ -99,7 +101,6 @@ document.addEventListener("keydown", (e) => {
         if (Math.abs(angle) > 30 && isOverlapping(kettle, cup)) {
             startPour();
         }
-        hasPoured = false;
     }
 });
 
@@ -261,8 +262,8 @@ coffee.addEventListener("pointerdown", (e) => {
 let coffeeAngle = 0;
 
 function startPourCoffee() {
-    if (hasPoured) return;
-    hasPoured = true;
+    if (hasPouredCoffee) return;
+    hasPouredCoffee = true;
     cup.style.backgroundPosition = `-66px 0px`
     cupContents.push('coffee');
     console.log('Cup now has:', cupContents);
@@ -277,7 +278,6 @@ document.addEventListener("keydown", (e) => {
 
         if (Math.abs(coffeeAngle) > 30 && isOverlapping(coffee, cup)) {
             startPourCoffee();
-            hasPoured = false;
         }
     }
 });
@@ -306,12 +306,12 @@ milk.addEventListener("pointerdown", (e) => {
 let milkAngle = 0;
 
 function startPourMilk() {
-    if (hasPoured) return;
-    hasPoured = true;
+    if (hasPouredMilk) return;
     if (cup.style.backgroundPosition === `-132px 0px`) {
         cup.style.backgroundPosition = `0px -66px`
         cupContents.push('milk');
         console.log('Cup now has:', cupContents);
+        hasPouredMilk = true;
     } else {
         document.getElementById("message").innerText = `Something else needs to be in the cup`;
     }
@@ -325,7 +325,6 @@ document.addEventListener("keydown", (e) => {
 
         if (Math.abs(milkAngle) > 30 && isOverlapping(milk, cup)) {
             startPourMilk();
-            hasPoured = false;
         }
     }
 });
@@ -351,12 +350,13 @@ function newCustomer() {
 
     cup.innerHTML = '';
 
-    hasPoured = false;
+    hasPouredTea = false;
+    hasPouredMilk = false;
+    hasPouredCoffee = false;
     angle = 0;
     milkAngle = 0;
     kettle.style.transform = `rotate(0deg)`;
     milk.style.transform = `rotate(0deg)`;
-    cream.style.transform = `rotate(0deg)`;
     coffee.style.transform = `rotate(0deg)`;
 
     document.getElementById("orderText").textContent = currentOrder.name;
@@ -391,8 +391,8 @@ function newCustomer() {
 }
 
 function serveDrink() {
-    const made = [...cupContents].sort();
-    const needed = [...currentOrder.need].sort();
+    const made = [...cupContents];
+    const needed = [...currentOrder.need];
     const isMatch = made.length === needed.length &&
         made.every((item, i) => item === needed[i]);
 
@@ -403,7 +403,7 @@ function serveDrink() {
         score = score + (needed.length * 50);
         document.getElementById("score").innerText = `score: ` + score;
     } else {
-        document.getElementById("message").innerText = 'Wrong order, made:' + made + ',needed:' + needed;
+        document.getElementById("message").innerText = 'Wrong order, needed:' + needed;
         loss++;
         if (loss > 3) {
             clearInterval(orderTimer);
