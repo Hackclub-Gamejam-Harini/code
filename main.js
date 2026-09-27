@@ -139,6 +139,7 @@ marshmallowBowl.addEventListener("pointerdown", (e) => {
     let marshAttached = false;
 
     newMash.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         if (marshAttached) return;
         draggedMash = newMash;
         const rect = newMash.getBoundingClientRect();
@@ -179,6 +180,7 @@ raspBowl.addEventListener("pointerdown", (e) => {
     let attached = false;
 
     newRasp.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         if (attached) return;
         draggedRasp = newRasp;
         const rect = newRasp.getBoundingClientRect();
@@ -212,6 +214,7 @@ const lemon = document.getElementById("lemon");
 let lemonDraggable = false;
 
 lemonBowl.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
     const newLemon = lemon.cloneNode(true);
     newLemon.style.visibility = 'visible';
     document.getElementById("workspace").appendChild(newLemon);
