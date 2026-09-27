@@ -1,0 +1,271 @@
+:root{
+  --parchment:#F1E7D0;
+  --parchment-dark:#E5D6B5;
+  --ink:#33261B;
+  --pine:#2E4A3C;
+  --pine-deep:#1F3329;
+  --amber:#C4862F;
+  --plum:#6C4463;
+  --card:#FBF5E6;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+*{box-sizing:border-box;}
+
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600&display=swap');
+
+body{
+  margin:0;
+  background:var(--parchment);
+  background-image:
+    radial-gradient(circle at 15% 10%, rgba(108,68,99,0.08), transparent 40%),
+    radial-gradient(circle at 90% 30%, rgba(46,74,60,0.10), transparent 45%);
+  color:var(--ink);
+  font-family:'Work Sans', sans-serif;
+  line-height:1.5;
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --parchment:#221B15; --parchment-dark:#2B2118; --ink:#F1E7D0; --card:#2B2118;
+  }
+}
+:root[data-theme="dark"]{
+  --parchment:#221B15; --parchment-dark:#2B2118; --ink:#F1E7D0; --card:#2B2118;
+}
+
+h1, h2, h3{
+  font-family:'Fraunces', serif;
+  margin:0;
+  letter-spacing:0.2px;
+}
+
+a{color:inherit;}
+
+.wrap{
+  max-width:760px;
+  margin:0 auto;
+  padding:0 24px 80px;
+}
+
+header.top{
+  padding:64px 24px 48px;
+  text-align:left;
+  max-width:760px;
+  margin:0 auto;
+}
+
+.heading{
+  font-family:'Fraunces', serif;
+  font-style:italic;
+  font-weight:400;
+  font-size:1.05rem;
+  color:var(--plum);
+  margin-bottom:6px;
+}
+
+header.top h1{
+  font-size:clamp(2.4rem, 6vw, 3.6rem);
+  font-weight:700;
+  color:var(--pine-deep);
+  line-height:1.05;
+}
+
+p.yeah{
+  max-width:52ch;
+  font-size:1.1rem;
+  margin-top:18px;
+  color:var(--ink);
+  opacity:0.85;
+}
+
+section{
+  padding:36px 0;
+}
+
+section + section{
+  border-top:1px solid rgba(51,38,27,0.14);
+}
+
+h2{
+  font-size:1.7rem;
+  color:var(--pine-deep);
+  margin-bottom:8px;
+}
+
+.section-note,
+.sectionNote{
+  max-width:56ch;
+  opacity:0.8;
+  margin-bottom:24px;
+}
+
+.toolGrid{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:14px;
+}
+
+@media (max-width:520px){
+  .toolGrid{grid-template-columns:1fr;}
+}
+
+.toolCard{
+  background:var(--card);
+  border:1px solid rgba(51,38,27,0.15);
+  border-radius:4px;
+  padding:16px 18px;
+}
+
+.toolName{
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:1.05rem;
+  color:var(--pine-deep);
+  margin-bottom:6px;
+}
+
+.toolCard p{
+  margin:0;
+  font-size:0.95rem;
+  opacity:0.85;
+}
+
+ol.steps{
+  list-style:none;
+  margin:0;
+  padding:0;
+  counter-reset:step;
+  border-left:2px solid var(--pine);
+}
+
+ol.steps li{
+  counter-increment:step;
+  position:relative;
+  padding:2px 0 26px 32px;
+}
+
+ol.steps li::before{
+  content:counter(step);
+  position:absolute;
+  left:-15px; top:0;
+  width:28px; height:28px;
+  background:var(--pine);
+  color:var(--parchment);
+  border-radius:50%;
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  font-size:0.9rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+ol.steps li h3{
+  font-size:1.05rem;
+  color:var(--pine-deep);
+  margin-bottom:4px;
+}
+
+ol.steps li p{
+  margin:0;
+  opacity:0.85;
+  font-size:0.95rem;
+}
+
+ol.steps li:last-child{
+  padding-bottom:2px;
+}
+
+kbd{
+  background:var(--parchment-dark);
+  border:1px solid rgba(51,38,27,0.25);
+  border-bottom-width:2px;
+  padding:1px 7px;
+  border-radius:4px;
+  font-family:inherit;
+  font-size:0.85rem;
+}
+
+.recipeTable{
+  width:100%;
+  border-collapse:collapse;
+  font-size:0.95rem;
+}
+
+.recipeTable th{
+  text-align:left;
+  font-family:'Fraunces', serif;
+  font-weight:600;
+  color:var(--pine-deep);
+  padding:10px 12px;
+  border-bottom:2px solid var(--pine);
+}
+
+.recipeTable td{
+  padding:12px;
+  border-bottom:1px solid rgba(51,38,27,0.14);
+  vertical-align:top;
+}
+
+.pill{
+  display:inline-block;
+  background:var(--parchment-dark);
+  border-radius:100px;
+  padding:2px 10px;
+  margin:2px 4px 2px 0;
+  font-size:0.85rem;
+}
+
+.scoreBox{
+  background:var(--pine-deep);
+  color:var(--parchment);
+  border-radius:6px;
+  padding:22px 24px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:24px;
+}
+
+.scoreBox .item{
+  flex:1;
+  min-width:160px;
+}
+
+.scoreBox .item h3{
+  font-family:'Fraunces', serif;
+  font-size:1rem;
+  color:var(--amber);
+  margin-bottom:4px;
+}
+
+.scoreBox .item p{
+  margin:0;
+  font-size:0.92rem;
+  opacity:0.92;
+}
+
+.tip{
+  margin-top:28px;
+  border-left:3px solid var(--amber);
+  padding:4px 0 4px 16px;
+  font-size:0.95rem;
+  opacity:0.9;
+}
+
+.tip strong{
+  color:var(--amber);
+}
+
+footer{
+  text-align:left;
+  padding:40px 24px 0;
+  max-width:760px;
+  margin:0 auto;
+  opacity:0.6;
+  font-size:0.9rem;
+}

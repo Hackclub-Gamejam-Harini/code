@@ -5,14 +5,14 @@ let score = 0;
 let loss = 0;
 
 const recipes = [
-    { name: 'Black Coffee', need: ['water'] },
+    { name: 'Black Coffee', need: ['coffee'] },
     { name: 'Milk Tea', need: ['water', 'milk'] },
     { name: 'Berry Milk', need: ['water', 'milk', 'raspberry'] },
 ];
 
 const customers = [
-    { animal: 'Frog', link: 'Assets/frog.png'},
-    { animal: 'Satyr', link: 'Assets/satyr.png'}
+    { animal: 'Frog', link: 'Assets/frog.png' },
+    { animal: 'Satyr', link: 'Assets/satyr.png' }
 ]
 
 function chooseCustomer() {
@@ -86,7 +86,7 @@ function startPour() {
     hasPoured = true;
     cupContents.push('water');
     console.log('Cup now has:', cupContents);
-    cup.style.backgroundPosition = `-66px 0px`
+    cup.style.backgroundPosition = `-132px 0px`
 }
 
 document.addEventListener("keydown", (e) => {
@@ -203,7 +203,52 @@ lemonBowl.addEventListener("pointerdown", (e) => {
     });
 });
 
-// adding milk
+// adding coffee
+const coffee = document.getElementById("coffeePot");
+let coffeeDragging = false;
+const coffeeHome = { left: coffee.style.left || getComputedStyle(coffee).left, top: coffee.style.top || getComputedStyle(coffee).top };
+
+coffee.addEventListener("pointerdown", (e) => {
+    coffeeDragging = true;
+    const rect = coffee.getBoundingClientRect();
+    offsetX = e.clientX - rect.left;
+    offsetY = e.clientY - rect.top;
+    coffee.setPointerCapture(e.pointerId);
+});
+
+let coffeeAngle = 0;
+
+function startPourCoffee() {
+    if (hasPoured) return;
+    hasPoured = true;
+    cup.style.backgroundPosition = `-66px 0px`
+    cupContents.push('coffee');
+    console.log('Cup now has:', cupContents);
+}
+
+
+document.addEventListener("keydown", (e) => {
+    if (coffeeDragging) {
+        if (e.key === "ArrowRight") coffeeAngle += 10;
+        if (e.key === "ArrowLeft") coffeeAngle -= 10;
+        coffee.style.transform = `rotate(${coffeeAngle}deg)`;
+
+        if (Math.abs(coffeeAngle) > 30 && isOverlapping(coffee, cup)) {
+            startPourCoffee();
+            hasPoured = false;
+        }
+    }
+});
+
+coffee.addEventListener("pointermove", (e) => {
+    if (!coffeeDragging) return;
+    const workspace = document.getElementById("workspace").getBoundingClientRect();
+    coffee.style.left = `${e.clientX - workspace.left - offsetX}px`;
+    coffee.style.top = `${e.clientY - workspace.top - offsetY}px`;
+});
+
+coffee.addEventListener("pointerup", () => coffeeDragging = false)
+
 const milk = document.getElementById("milk");
 let milkDragging = false;
 const milkHome = { left: milk.style.left || getComputedStyle(milk).left, top: milk.style.top || getComputedStyle(milk).top };
@@ -252,53 +297,6 @@ milk.addEventListener("pointermove", (e) => {
 
 milk.addEventListener("pointerup", () => milkDragging = false)
 
-const cream = document.getElementById("cream");
-let creamDragging = false;
-const creamHome = { left: cream.style.left || getComputedStyle(cream).left, top: cream.style.top || getComputedStyle(cream).top };
-
-cream.addEventListener("pointerdown", (e) => {
-    creamDragging = true;
-    const rect = cream.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    cream.setPointerCapture(e.pointerId);
-});
-
-let creamAngle = 0;
-
-function startPourCream() {
-    if (hasPoured) return;
-    hasPoured = true;
-    if (cup.style.backgroundPosition === `-66px 0px`) {
-        cup.style.backgroundPosition = `-0px -65px`
-        cupContents.push('cream');
-        console.log('Cup now has:', cupContents);
-    } else {
-        document.getElementById("message").innerText = `Something else needs to be in the cup`;
-    }
-}
-
-document.addEventListener("keydown", (e) => {
-    if (creamDragging) {
-        if (e.key === "ArrowRight") creamAngle += 10;
-        if (e.key === "ArrowLeft") creamAngle -= 10;
-        cream.style.transform = `rotate(${creamAngle}deg)`;
-
-        if (Math.abs(creamAngle) > 30 && isOverlapping(cream, cup)) {
-            startPourCream();
-            hasPoured = false;
-        }
-    }
-});
-cream.addEventListener("pointermove", (e) => {
-    if (!creamDragging) return;
-    const workspace = document.getElementById("workspace").getBoundingClientRect();
-    cream.style.left = `${e.clientX - workspace.left - offsetX}px`;
-    cream.style.top = `${e.clientY - workspace.top - offsetY}px`;
-});
-
-cream.addEventListener("pointerup", () => creamDragging = false)
-
 // orders
 let currentOrder = null;
 let orderTimer = null;
@@ -318,8 +316,8 @@ function newCustomer() {
     milk.style.transform = `rotate(0deg)`;
     cream.style.transform = `rotate(0deg)`;
 
-    document.getElementById("orderText").textContent =
-        `Order: ${currentOrder.name} (${currentOrder.need.join(', ')})`;
+    document.getElementById("orderText").textContent = currentOrder.name;
+    document.getElementById("ingredientsText").textContent = currentOrder.need;
 
     clearInterval(orderTimer);
     orderTimer = setInterval(() => {
@@ -328,7 +326,10 @@ function newCustomer() {
         if (timeLeft <= 0) {
             clearInterval(orderTimer);
             document.getElementById("message").innerText = 'Times up';
-            loss ++;
+            loss++;
+            if (loss > 3) {
+                window.location.href = "end.html";
+            }
             newCustomer();
         }
     }, 1000);
@@ -338,9 +339,9 @@ function newCustomer() {
     kettle.style.top = kettleHome.top;
     milk.style.left = milkHome.left;
     milk.style.top = milkHome.top;
-    cream.style.left = creamHome.left;
-    cream.style.top = creamHome.top;
     cup.style.backgroundPosition = `0px 0px`;
+    coffee.style.left = coffeeHome.left;
+    coffee.style.top = coffeeHome.top;
 }
 
 function serveDrink() {
@@ -357,13 +358,18 @@ function serveDrink() {
         document.getElementById("score").innerText = `score: ` + score;
     } else {
         document.getElementById("message").innerText = 'Wrong order, made:' + made + 'needed:' + needed;
-        loss ++;
+        loss++;
+        if (loss > 3) {
+            window.location.href = "end.html";
+        }
     }
 
     setTimeout(newCustomer, 1000);
 }
 
-document.getElementById("serveBtn").addEventListener('click', serveDrink);
+document.getElementById("serveBtn").addEventListener('click', () => {
+    serveDrink();
+});
 
 newCustomer();
 
