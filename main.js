@@ -6,8 +6,10 @@ let loss = 0;
 
 const recipes = [
     { name: 'Black Coffee', need: ['coffee'] },
-    { name: 'Milk Tea', need: ['water', 'milk'] },
-    { name: 'Berry Milk', need: ['water', 'milk', 'raspberry'] },
+    { name: 'Milk Tea', need: ['tea', 'milk'] },
+    { name: 'Lemon Tea', need: ['tea', 'milk', 'lemon'] },
+    { name: 'Coffee with Marshmallows', need: ['coffee', 'marshmallow']},
+    { name: 'Berry Tea', need: ['tea', 'milk', 'raspberry', 'marshmallow']}
 ];
 
 const customers = [
@@ -84,7 +86,7 @@ let angle = 0;
 function startPour() {
     if (hasPoured) return;
     hasPoured = true;
-    cupContents.push('water');
+    cupContents.push('tea');
     console.log('Cup now has:', cupContents);
     cup.style.backgroundPosition = `-132px 0px`
 }
@@ -123,7 +125,47 @@ cup.addEventListener("pointermove", (e) => {
 
 cup.addEventListener("pointerup", () => cupDragging = false);
 
-// add raspberries
+// add marshmallows
+const marshmallowBowl = document.getElementById("mashmallowBowl");
+const mashmallow = document.getElementById("mashmallow");
+let mashDraggable = false;
+
+marshmallowBowl.addEventListener("pointerdown", (e) => {
+    const newMash = mashmallow.cloneNode(true);
+    newMash.style.visibility = 'visible';
+    document.getElementById("workspace").appendChild(newMash);
+
+    let marshAttached = false;
+
+    newMash.addEventListener("pointerdown", (e) => {
+        if (marshAttached) return;
+        draggedMash = newMash;
+        const rect = newMash.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        newMash.setPointerCapture(e.pointerId);
+    });
+
+    newMash.addEventListener("pointermove", (e) => {
+        if (marshAttached || draggedMash !== newMash) return;
+        const workspace = document.getElementById("workspace").getBoundingClientRect();
+        newMash.style.left = `${e.clientX - workspace.left - offsetX}px`;
+        newMash.style.top = `${e.clientY - workspace.top - offsetY}px`;
+    });
+
+    newMash.addEventListener("pointerup", () => {
+        if (marshAttached) return;
+        draggedMash = null;
+
+        if (isOverlapping(newMash, cup)) {
+            attachToCup(newMash);
+            marshAttached = true;
+            cupContents.push('marshmallow');
+        }
+    });
+});
+
+// Raspberries
 const raspBowl = document.getElementById("raspberryBowl");
 const rasp = document.getElementById("raspberry");
 let raspDraggable = false;
@@ -266,8 +308,8 @@ let milkAngle = 0;
 function startPourMilk() {
     if (hasPoured) return;
     hasPoured = true;
-    if (cup.style.backgroundPosition === `-66px 0px`) {
-        cup.style.backgroundPosition = `-132px 0px`
+    if (cup.style.backgroundPosition === `-132px 0px`) {
+        cup.style.backgroundPosition = `0px -66px`
         cupContents.push('milk');
         console.log('Cup now has:', cupContents);
     } else {
@@ -305,7 +347,7 @@ let timeLeft = 0;
 function newCustomer() {
     currentOrder = recipes[Math.floor(Math.random() * recipes.length)];
     cupContents = [];
-    timeLeft = 20;
+    timeLeft = 25;
 
     cup.innerHTML = '';
 
@@ -315,6 +357,7 @@ function newCustomer() {
     kettle.style.transform = `rotate(0deg)`;
     milk.style.transform = `rotate(0deg)`;
     cream.style.transform = `rotate(0deg)`;
+    coffee.style.transform = `rotate(0deg)`;
 
     document.getElementById("orderText").textContent = currentOrder.name;
     document.getElementById("ingredientsText").textContent = currentOrder.need;
@@ -328,6 +371,9 @@ function newCustomer() {
             document.getElementById("message").innerText = 'Times up';
             loss++;
             if (loss > 3) {
+                clearInterval(orderTimer);
+                localStorage.setItem('finalScore', score);
+                localStorage.setItem('finalLoss', loss);
                 window.location.href = "end.html";
             }
             newCustomer();
@@ -357,9 +403,12 @@ function serveDrink() {
         score = score + (needed.length * 50);
         document.getElementById("score").innerText = `score: ` + score;
     } else {
-        document.getElementById("message").innerText = 'Wrong order, made:' + made + 'needed:' + needed;
+        document.getElementById("message").innerText = 'Wrong order, made:' + made + ',needed:' + needed;
         loss++;
         if (loss > 3) {
+            clearInterval(orderTimer);
+            localStorage.setItem('finalScore', score);
+            localStorage.setItem('finalLoss', loss);
             window.location.href = "end.html";
         }
     }
