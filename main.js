@@ -214,7 +214,6 @@ const lemon = document.getElementById("lemon");
 let lemonDraggable = false;
 
 lemonBowl.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
     const newLemon = lemon.cloneNode(true);
     newLemon.style.visibility = 'visible';
     document.getElementById("workspace").appendChild(newLemon);
@@ -222,6 +221,7 @@ lemonBowl.addEventListener("pointerdown", (e) => {
     let lemonAttached = false;
 
     newLemon.addEventListener("pointerdown", (e) => {
+        e.preventDefault();
         if (lemonAttached) return;
         draggedLemon = newLemon;
         const rect = newLemon.getBoundingClientRect();
@@ -347,6 +347,7 @@ let orderTimer = null;
 let timeLeft = 0;
 
 function newCustomer() {
+    document.getElementById("message").innerText = '';
     currentOrder = recipes[Math.floor(Math.random() * recipes.length)];
     cupContents = [];
     timeLeft = 25;
